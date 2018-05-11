@@ -1,0 +1,36 @@
+{
+    "description": "Port of RadioHead version 1.48 to mbed. It is a little messy and only works for SPI at this time.", 
+    "repository": {
+        "url": "https://os.mbed.com/users/davidr99/code/RadioHead-148/", 
+        "type": "hg"
+    }, 
+    "platforms": [
+        "atmelsam", 
+        "freescalekinetis", 
+        "maxim32", 
+        "nordicnrf51", 
+        "nordicnrf52", 
+        "nxplpc", 
+        "siliconlabsefm32", 
+        "ststm32", 
+        "teensy", 
+        "wiznet7500"
+    ], 
+    "frameworks": [
+        "mbed"
+    ], 
+    "version": "ab4e012489", 
+    "authors": [
+        {
+            "url": "https://os.mbed.com/users/davidr99/", 
+            "maintainer": false, 
+            "email": null, 
+            "name": "David Rimer"
+        }
+    ], 
+    "keywords": [
+        "radiohead"
+    ], 
+    "id": 5181, 
+    "name": "RadioHead-148"
+}
