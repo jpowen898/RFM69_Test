@@ -97,7 +97,7 @@ void RH_RF69::setIdleMode(uint8_t idleMode)
     _idleMode = idleMode;
 }
 
-bool RH_RF69::init()
+bool RH_RF69::init(uint8_t &read)
 {
     if (!RHSPIDriver::init())
 	return false;
@@ -113,6 +113,7 @@ bool RH_RF69::init()
     // This also tests whether we are really connected to a device
     // My test devices return 0x24
     _deviceType = spiRead(RH_RF69_REG_10_VERSION);
+    read = _deviceType;
     if (_deviceType == 00 ||
 	_deviceType == 0xff)
 	return false;

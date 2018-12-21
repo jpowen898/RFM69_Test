@@ -634,7 +634,7 @@ public:
     /// - Sets the frequency to 434.0 MHz
     /// - Sets the modem data rate to FSK_Rb2Fd5
     /// \return  true if everything was successful
-    bool        init();
+    bool        init(uint8_t &read);
 
     /// Reads the on-chip temperature sensor.
     /// The RF69 must be in Idle mode (= RF69 Standby) to measure temperature.
