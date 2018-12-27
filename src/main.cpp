@@ -2,7 +2,7 @@
 #include <mbed.h>
 #include <RH_RF69.h>
 
-#define RH_TRANSMITTER
+//#define RH_TRANSMITTER
 
 int main() {
     DigitalOut led(D6);
@@ -17,6 +17,7 @@ int main() {
     uint8_t val = 0;
     while (!success) {
         success = rfm.init(val);
+        rfm.sleep();
         pc.printf("RFM Init: %s Try %d\n\r", success ? "Succeeded" : "Failed", cnt++);
         pc.printf("Init Return Val: %x \n\r", val );
     }
