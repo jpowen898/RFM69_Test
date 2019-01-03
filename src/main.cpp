@@ -15,15 +15,14 @@ int main() {
     bool success = false;
     size_t cnt = 0;
     Serial pc(D1, D0);
-    pc.baud(9600);
+    pc.baud(115200);
     wait(1);
     uint8_t val = 0;
     while (!success) {
         success = rfm.init(val);
-        pc.printf("RFM Init: %s Try %d\n\r", success ? "Succeeded" : "Failed", cnt++);
-        pc.printf("Init Return Val: %x \n\r", val );
+        pc.printf("RFM Init: %s Try %d\r", success ? "Succeeded" : "Failed", cnt++);
     }
-
+    pc.printf("\n\r");
 
             /*     Transmitter code     */
 #ifdef RH_TRANSMITTER
@@ -44,17 +43,17 @@ int main() {
 
             /*      Reciever Code      */
 #else
-    
     uint8_t buf[32];
     uint8_t len = sizeof(buf);
     int avg = 0;
-    cnt = 0;
     std::vector<int> last5(vect_Length);
     while(1) {
+        pc.printf("\r                                  \r");
         pc.printf("recv... ");
         len = sizeof(buf);
         bool rc = rfm.recv(buf, &len);
         if (rc) {
+            cnt = 0;
             int8_t rssi = rfm.lastRssi();
             last5.erase(last5.begin()+vect_Length-1);
             last5.push_back(rssi);
@@ -67,10 +66,10 @@ int main() {
             for (uint8_t i = 0; i < len; i++) {
                 printf("%02x", buf[i]);
             }
-            pc.printf("\n\r");
+            
         }
         else {
-            pc.printf("failed!\n\r");
+            pc.printf("failed! Try:%d\r", cnt++);
         }
         wait(0.5);
     }
