@@ -5,8 +5,10 @@
 //#include <PowerControl.h>
 //#include <PowerControl/PowerControl.h>
 
-#define vect_Length 5
-//#define RH_TRANSMITTER
+//sudo miniterm /dev/ttyUSB0 115200
+
+#define vect_Length 7
+#define RH_TRANSMITTER
 
 int main() {
     DigitalOut led(D6);
@@ -16,7 +18,7 @@ int main() {
     size_t cnt = 0;
     Serial pc(D1, D0);
     pc.baud(115200);
-    wait(1);
+
     uint8_t val = 0;
     while (!success) {
         success = rfm.init(val);
@@ -26,17 +28,22 @@ int main() {
 
             /*     Transmitter code     */
 #ifdef RH_TRANSMITTER
-    //PowerControl pwr;
     cnt = 0;
     while(cnt<400) {
+        cnt++;
         uint8_t buf[4] = {0xAA, 0x55, 0xAA, 0x55};
         success = rfm.send(buf, sizeof(buf));
         pc.printf("RFM Send: %d\n\r", success);
         led = led ^ 1;
-        cnt++;
+        rfm.sleep();
         wait(.25);
     }
-    rfm.sleep();
+    cnt = 0;
+    while(!rfm.sleep()){
+        cnt++;
+        pc.printf("RFM Sleep Failed. Try: %d\r", cnt);
+    }
+    pc.printf("RFM Sleep Successful!\r\n");
     wait(2);
     deepsleep();
 
