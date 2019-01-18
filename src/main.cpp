@@ -2,17 +2,24 @@
 #include <mbed.h>
 #include <vector>
 #include "RH_RF69.h"
-//#include <PowerControl.h>
-//#include <PowerControl/PowerControl.h>
+#include "InterruptIn.h"
+#include <PowerM.h>
 
 //sudo miniterm /dev/ttyUSB0 115200
+//parker@Parkers:~/.platformio/packages/framework-mbed/targets/TARGET_NXP/TARGET_LPC82X$
 
 #define vect_Length 7
 #define RH_TRANSMITTER
+void wakeup(){
+    Serial pc(D1, D0);
+    pc.baud(115200);
+    pc.printf("interrupt!!\r\n");
+}
 
 int main() {
+    InterruptIn BTN(D3);
     DigitalOut led(D6);
-    led = 0;
+    led = 0;    
     RH_RF69 rfm(D10, D9);
     bool success = false;
     size_t cnt = 0;
@@ -28,8 +35,11 @@ int main() {
 
             /*     Transmitter code     */
 #ifdef RH_TRANSMITTER
+    PowerM* PM = new PowerM();
+    
+    BTN.rise(wakeup);
     cnt = 0;
-    while(cnt<400) {
+    while(1) {
         cnt++;
         uint8_t buf[4] = {0xAA, 0x55, 0xAA, 0x55};
         success = rfm.send(buf, sizeof(buf));
@@ -37,15 +47,22 @@ int main() {
         led = led ^ 1;
         rfm.sleep();
         wait(.25);
+        if(cnt>11){
+            cnt = 0;
+            while(!rfm.sleep()){
+                cnt++;
+                pc.printf("RFM Sleep Failed. Try: %d\r", cnt);
+            }
+            pc.printf("RFM Sleep Successful!\r\n");
+            wait(2);
+            pc.printf("LPC Sleep init!\r\n");
+            //PM->sleep();
+            sleep();
+            pc.printf("Awake!\r\n");
+            cnt = 0;
+        }
     }
-    cnt = 0;
-    while(!rfm.sleep()){
-        cnt++;
-        pc.printf("RFM Sleep Failed. Try: %d\r", cnt);
-    }
-    pc.printf("RFM Sleep Successful!\r\n");
-    wait(2);
-    deepsleep();
+    
 
 
             /*      Reciever Code      */
