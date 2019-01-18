@@ -4,26 +4,26 @@
 #include "RH_RF69.h"
 #include "InterruptIn.h"
 #include <PowerM.h>
-
+#include "TransmitReceiveBoard.h"
 //sudo miniterm /dev/ttyUSB0 115200
 //parker@Parkers:~/.platformio/packages/framework-mbed/targets/TARGET_NXP/TARGET_LPC82X$
 
 #define vect_Length 7
 #define RH_TRANSMITTER
 void wakeup(){
-    Serial pc(D1, D0);
+    Serial pc(SERDEB, D0);
     pc.baud(115200);
     pc.printf("interrupt!!\r\n");
 }
 
 int main() {
-    InterruptIn BTN(D3);
-    DigitalOut led(D6);
+    
+    DigitalOut led(LED1);
     led = 0;    
-    RH_RF69 rfm(D10, D9);
+    RH_RF69 rfm(NSS, DIO0);
     bool success = false;
     size_t cnt = 0;
-    Serial pc(D1, D0);
+    Serial pc(SERDEB, D0);
     pc.baud(115200);
 
     uint8_t val = 0;
@@ -36,7 +36,7 @@ int main() {
             /*     Transmitter code     */
 #ifdef RH_TRANSMITTER
     PowerM* PM = new PowerM();
-    
+    InterruptIn BTN(B1);
     BTN.rise(wakeup);
     cnt = 0;
     while(1) {
@@ -55,9 +55,9 @@ int main() {
             }
             pc.printf("RFM Sleep Successful!\r\n");
             wait(2);
-            pc.printf("LPC Sleep init!\r\n");
-            //PM->sleep();
-            sleep();
+            pc.printf("LPC DeepSleep init!\r\n");
+            PM->DeepSleep(8);
+            //sleep();
             pc.printf("Awake!\r\n");
             cnt = 0;
         }
