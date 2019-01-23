@@ -18,7 +18,7 @@ void wakeup(){
 
 int main() {
     
-    DigitalOut led(LED1);
+    DigitalOut led(D10);
     led = 0;    
     RH_RF69 rfm(NSS, DIO0);
     bool success = false;
