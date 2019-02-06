@@ -4,12 +4,19 @@
 #include "RH_RF69.h"
 #include "InterruptIn.h"
 #include <PowerM.h>
-#include "TransmitReceiveBoard.h"
+#define RH_TRANSMITTER
+
+#ifndef RH_Transmitter
+#include "TransmitReceiveBoard.h" // Receive Board Pinouts
+#else 
+#include "MinTransmitBoard.h" // Minimized Transmitter Board Pin Outs
+#endif
+
 //sudo miniterm /dev/ttyUSB0 115200
-//parker@Parkers:~/.platformio/packages/framework-mbed/targets/TARGET_NXP/TARGET_LPC82X$
+//Sleep functions location: parker@Parkers:~/.platformio/packages/framework-mbed/targets/TARGET_NXP/TARGET_LPC82X$
 
 #define vect_Length 7
-#define RH_TRANSMITTER
+
 void wakeup(){
     Serial pc(SERDEB, D0);
     pc.baud(115200);
@@ -18,7 +25,7 @@ void wakeup(){
 
 int main() {
     
-    DigitalOut led(D10);
+    DigitalOut led(LED1);
     led = 0;    
     RH_RF69 rfm(NSS, DIO0);
     bool success = false;
