@@ -4,22 +4,23 @@
 #include "RH_RF69.h"
 #include "InterruptIn.h"
 #include <PowerM.h>
-#define RH_TRANSMITTER
 
-#ifndef RH_Transmitter
-#include "TransmitReceiveBoard.h" // Receive Board Pinouts
-#else 
+#define RH_TRANSMITTER 
+#define MIN_BOARD
+#ifdef MIN_BOARD
 #include "MinTransmitBoard.h" // Minimized Transmitter Board Pin Outs
+#else
+#include "TransmitReceiveBoard.h" // Receive Board Pinouts
 #endif
-
 //sudo miniterm /dev/ttyUSB0 115200
+//sudo miniterm /dev/ttyUSB0 9600
 //Sleep functions location: parker@Parkers:~/.platformio/packages/framework-mbed/targets/TARGET_NXP/TARGET_LPC82X$
 
 #define vect_Length 7
 
 void wakeup(){
     Serial pc(SERDEB, D0);
-    pc.baud(115200);
+    pc.baud(BAUD);
     pc.printf("interrupt!!\r\n");
 }
 
@@ -31,7 +32,8 @@ int main() {
     bool success = false;
     size_t cnt = 0;
     Serial pc(SERDEB, D0);
-    pc.baud(115200);
+    pc.baud(BAUD);  
+    pc.printf("init");
 
     uint8_t val = 0;
     while (!success) {
@@ -43,8 +45,10 @@ int main() {
             /*     Transmitter code     */
 #ifdef RH_TRANSMITTER
     PowerM* PM = new PowerM();
+    /*#ifndef MIN_BOARD
     InterruptIn BTN(B1);
     BTN.rise(wakeup);
+    #endif*/
     cnt = 0;
     while(1) {
         cnt++;
