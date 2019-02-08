@@ -25,7 +25,6 @@ void wakeup(){
 }
 
 int main() {
-    
     DigitalOut led(LED1);
     led = 0;    
     RH_RF69 rfm(NSS, DIO0);
@@ -34,7 +33,6 @@ int main() {
     Serial pc(SERDEB, D0);
     pc.baud(BAUD);  
     pc.printf("init");
-
     uint8_t val = 0;
     while (!success) {
         success = rfm.init(val);
@@ -74,8 +72,6 @@ int main() {
         }
     }
     
-
-
             /*      Reciever Code      */
 #else
     uint8_t buf[32];
@@ -101,7 +97,6 @@ int main() {
             for (uint8_t i = 0; i < len; i++) {
                 printf("%02x", buf[i]);
             }
-            
         }
         else {
             pc.printf("failed! Try:%d\r", cnt++);
