@@ -6,7 +6,7 @@
 #include <PowerM.h>
 
 #define RH_TRANSMITTER 
-#define MIN_BOARD
+//#define MIN_BOARD
 #ifdef MIN_BOARD
 #include "MinTransmitBoard.h" // Minimized Transmitter Board Pin Outs
 #else
@@ -43,10 +43,8 @@ int main() {
             /*     Transmitter code     */
 #ifdef RH_TRANSMITTER
     PowerM* PM = new PowerM();
-    /*#ifndef MIN_BOARD
     InterruptIn BTN(B1);
-    BTN.rise(wakeup);
-    #endif*/
+    BTN.rise(&wakeup);
     cnt = 0;
     while(1) {
         cnt++;
@@ -65,8 +63,9 @@ int main() {
             pc.printf("RFM Sleep Successful!\r\n");
             wait(2);
             pc.printf("LPC PowerDown init!\r\n");
-            PM->PowerDown();
-            //PM->DeepSleep(8);
+            //PM->PowerDown();
+            PM->DeepSleep(pc);
+            //PM->sleep();
             //sleep();
             pc.printf("Awake!\r\n");
             cnt = 0;

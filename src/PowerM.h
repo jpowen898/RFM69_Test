@@ -11,6 +11,7 @@ private:
     int *STARTERP0  = (int *) 0x40048204;
     int *PDAWAKECFG = (int *) 0x40048234;
     int *MAINCLKSEL = (int *) 0x40048070;
+    int *PINTSEL0  = (int *) 0x40048178;
 public:
     PowerM(){};
     ~PowerM();
@@ -22,8 +23,8 @@ The following steps must be performed to enter Sleep mode:
 (Table 58).
 3. Use the ARM Cortex-M0+ Wait-For-Interrupt (WFI) instruction.*/
     void sleep(){
-        *PCON = *PCON & 0b000111111111;
-        *SCR = *SCR & 0b11011;
+        *PCON = *PCON & ~0b111;
+        *SCR = *SCR & ~0b00100;
         __WFI();
         //return true;    
     };
@@ -40,26 +41,36 @@ interrupts in the interrupt wake-up registers (Table 50, Table 51) and in the NV
 5. Select the IRC as the main clock. See Table 32.
 6. Write one to the SLEEPDEEP bit in the ARM Cortex-M0+ SCR register (Table 58).
 7. Use the ARM WFI instruction.*/
-    bool DeepSleep(int NumberWakeUpInterrupts){
-        *PCON = (*PCON & 0b000111111111) | 0b0100000000000;
-        *DPSLEEPCFG = *DPSLEEPCFG | 0b0001;
-        /*int bin = 0b0;
-        if (NumberWakeUpInterrupts >= 8){
-            return false;
-        }
-        else{
-            for (int i = 0; i < NumberWakeUpInterrupts; i++){
-                bin >> 0b1;
-            }
-        }
-        *STARTERP0 = bin;*/
-        *PDAWAKECFG = 0b0000000110111010; // bits 8-14 are reserved, set to 1101110
-        *STARTERP0 = 0b11111111;
+    bool DeepSleep(Serial &ser){
+     
+        *PCON |= 0b010;
+        *DPSLEEPCFG |= 0b1001000;   
+        *PDAWAKECFG |=  0xff; // bits 8-14 are reserved, set to 1101110
+        *STARTERP0 |= 0b11111111;
         *MAINCLKSEL = 0x0;
         *SCR = *SCR | 0b00100;
+        printPowerReg(ser);
         __WFI();
         return true;
     };
+
+    void printPowerReg(Serial &ser){
+        ser.printf("PCON:       0x%08x\r\n", *PCON);
+        ser.printf("DPSLEEPCFG: 0x%08x\r\n", *DPSLEEPCFG);
+        ser.printf("PDAWAKECFG: 0x%08x\r\n", *PDAWAKECFG);
+        ser.printf("STARTERP0:  0x%08x\r\n", *STARTERP0);
+        ser.printf("MAINCLKSEL: 0x%08x\r\n", *MAINCLKSEL);
+        ser.printf("SCR:        0x%08x\r\n", *SCR);
+        ser.printf("PINTSEL0:   0x%2d\r\n", *PINTSEL0);
+        ser.printf("PINTSEL1:   0x%2d\r\n", *(PINTSEL0+1));
+    }
+
+    /*  int *PCON = (int *) 0x40020000;
+    int *SCR = (int *) 0xE000ED10;
+    int *DPSLEEPCFG = (int *) 0x40048230;
+    int *STARTERP0  = (int *) 0x40048204;
+    int *PDAWAKECFG = (int *) 0x40048234;
+    int *MAINCLKSEL = (int *) 0x40048070;*/
 
 /*6.7.6.2 Programming Power-down mode
 The following steps must be performed to enter Power-down mode:
