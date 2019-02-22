@@ -64,8 +64,9 @@ int main() {
             }
             pc.printf("RFM Sleep Successful!\r\n");
             wait(2);
-            pc.printf("LPC DeepSleep init!\r\n");
-            PM->DeepSleep(8);
+            pc.printf("LPC PowerDown init!\r\n");
+            PM->PowerDown();
+            //PM->DeepSleep(8);
             //sleep();
             pc.printf("Awake!\r\n");
             cnt = 0;

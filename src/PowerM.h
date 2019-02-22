@@ -9,6 +9,7 @@ private:
     int *SCR = (int *) 0xE000ED10;
     int *DPSLEEPCFG = (int *) 0x40048230;
     int *STARTERP0  = (int *) 0x40048204;
+    int *PDAWAKECFG = (int *) 0x40048234;
     int *MAINCLKSEL = (int *) 0x40048070;
 public:
     PowerM(){};
@@ -41,7 +42,7 @@ interrupts in the interrupt wake-up registers (Table 50, Table 51) and in the NV
 7. Use the ARM WFI instruction.*/
     bool DeepSleep(int NumberWakeUpInterrupts){
         *PCON = (*PCON & 0b000111111111) | 0b0100000000000;
-        *DPSLEEPCFG = *DPSLEEPCFG | 0b000100000000000;
+        *DPSLEEPCFG = *DPSLEEPCFG | 0b0001;
         /*int bin = 0b0;
         if (NumberWakeUpInterrupts >= 8){
             return false;
@@ -52,6 +53,7 @@ interrupts in the interrupt wake-up registers (Table 50, Table 51) and in the NV
             }
         }
         *STARTERP0 = bin;*/
+        *PDAWAKECFG = 0b0000000110111010; // bits 8-14 are reserved, set to 1101110
         *STARTERP0 = 0b11111111;
         *MAINCLKSEL = 0x0;
         *SCR = *SCR | 0b00100;
@@ -72,7 +74,14 @@ in the interrupt wake-up registers (Table 50, Table 51) and in the NVIC.
 6. Write one to the SLEEPDEEP bit in the ARM Cortex-M0+ SCR register (Table 58).
 7. Use the ARM WFI instruction.*/
     bool PowerDown(){
-
+        *PCON = 0x2;
+        *DPSLEEPCFG = *DPSLEEPCFG | 0b0011;
+        *PDAWAKECFG = 0b0000000110111010; // bits 8-14 are reserved, set to 1101110
+        *STARTERP0 = 0b11111111;
+        *MAINCLKSEL = 0x0;
+        *SCR = *SCR | 0b00100;
+        __WFI();
+        return true;
     };
 
 /*6.7.7.2 Programming Deep power-down mode using the WAKEUP pin:
@@ -85,7 +94,7 @@ WAKEUP pin for waking up:
 5. Write one to the SLEEPDEEP bit in the ARM Cortex-M0+ SCR register (Table 58).
 6. Use the ARM WFI instruction.*/
     bool DeepPowerDown(){
-
+        return false;
     };
 
 
