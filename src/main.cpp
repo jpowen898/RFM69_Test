@@ -4,8 +4,9 @@
 #include "RH_RF69.h"
 #include "InterruptIn.h"
 #include <PowerM.h>
+#include "SevenSegment.h"
 
-#define RH_TRANSMITTER 
+//#define RH_TRANSMITTER 
 //#define MIN_BOARD
 #ifdef MIN_BOARD
 #include "MinTransmitBoard.h" // Minimized Transmitter Board Pin Outs
@@ -74,6 +75,8 @@ int main() {
     
             /*      Reciever Code      */
 #else
+    SevenSegment display(DispSer, SRCLK, RCLK);
+    display.clear();
     uint8_t buf[32];
     uint8_t len = sizeof(buf);
     int avg = 0;
@@ -93,13 +96,15 @@ int main() {
                 avg += last5.at(v);
             }
             avg = avg*10/vect_Length;
+            display.displayFourNums(avg);
             pc.printf("rssi=%d len=%u 0x", avg, len);
-            for (uint8_t i = 0; i < len; i++) {
+            for (uint8_t i = 0; i <= len; i++) {
                 printf("%02x", buf[i]);
             }
         }
         else {
             pc.printf("failed! Try:%d\r", cnt++);
+            display.displayFourNums(0);
         }
         wait(0.5);
     }
